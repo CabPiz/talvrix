@@ -1,136 +1,189 @@
 # Talvrix — Product Requirements Document (PRD)
 
-**Produto:** Talvrix  
-**Empresa:** Kairos Labs  
-**Versão:** 1.0  
-**Data:** 2026-08-07  
+**Produto:** Talvrix
+**Empresa:** Kairos Labs
+**Versão:** 2.0
+**Data:** 2026-08-13
 
 ---
 
 ## 1. Visão do Produto
 
-Talvrix é uma plataforma SaaS que usa IA para fazer matching inteligente entre o currículo do usuário e vagas de emprego em múltiplos sites, ordenando os resultados por salário e compatibilidade de perfil — em segundos, sem esforço manual.
+Talvrix é uma plataforma SaaS que faz matching inteligente entre o currículo do usuário e vagas coletadas de múltiplas fontes — GitHub, Telegram, RSS, career pages e input direto do usuário — ordenando por salário e compatibilidade de perfil.
 
 > "O falcão que enxerga a oportunidade certa antes de qualquer outro."
+
+**Posicionamento:** candidato-first. Nenhuma ferramenta brasileira faz "currículo ↔ vaga" com matching semântico + keyword híbrido e ranking de salário para o candidato.
 
 ---
 
 ## 2. Problema
 
-Encontrar vagas relevantes é manual, fragmentado e ineficiente:
-
-- O candidato acessa múltiplos sites separadamente
-- As buscas por palavra-chave ignoram o perfil real do currículo
-- Não há ordenação por salário agregada entre sites
-- O candidato não sabe se é competitivo para a vaga antes de se candidatar
-- Ferramentas existentes como Monster não operam no Brasil de forma acessível
+- Candidatos acessam 5–10 sites manualmente: 3–5 horas por semana desperdiçadas
+- Busca por palavra-chave ignora o perfil real do currículo
+- Vagas relevantes aparecem em fontes fragmentadas (GitHub, Telegram, RSS, sites de empresa) sem agregação
+- Ferramentas brasileiras existentes (Gupy, Vagas.com) são focadas em recrutadores
 
 ---
 
 ## 3. Solução
 
-Talvrix automatiza todo o processo:
+1. Upload do currículo em PDF
+2. IA extrai e estrutura: skills, experiência, senioridade, stack principal
+3. Sistema coleta vagas de fontes cooperativas automaticamente
+4. Hybrid Search (semântico + keyword com RRF) ranqueia vagas por compatibilidade
+5. Resultados exibidos ordenados por score + salário
 
-1. Usuário faz upload do currículo (PDF)
-2. IA extrai e estrutura skills, experiência e nível de senioridade
-3. Scraper coleta vagas dos sites configurados
-4. IA faz o match e gera score de compatibilidade por vaga
-5. Resultados são exibidos ordenados por salário + score
+**Por que Hybrid Search (não só semântico):** termos técnicos como "Node.js 18", "CLT", "PJ", siglas de stacks precisam de match exato — busca vetorial pura erra esses casos.
 
 ---
 
 ## 4. Usuários-alvo
 
-| Perfil | Necessidade principal |
+| Perfil | Necessidade |
 |---|---|
-| Dev em busca de recolocação | Encontrar vagas tech bem pagas sem perder tempo |
-| Profissional sênior | Vagas compatíveis com experiência, sem filtrar manualmente |
+| Dev em busca de recolocação | Vagas tech bem pagas sem varrer 10 sites |
 | Recém-formado | Entender onde se encaixa no mercado |
-| Qualquer área | Automatizar busca em múltiplos sites simultaneamente |
+| Profissional sênior (V2+) | Alertas automáticos de vagas compatíveis |
+| Headhunter independente (V3+) | Rastrear candidatos para múltiplos clientes |
 
 ---
 
-## 5. MVP — Escopo Fase 1
+## 5. Escopo por Versão
 
-### Funcionalidades incluídas
-- Upload de currículo em PDF
-- Configuração de 1 site de vagas pelo usuário
-- Scraping automatizado do site configurado
-- Match IA entre currículo e vagas encontradas
-- Exibição de até 10 vagas ranqueadas por salário + score de compatibilidade
+### V1 MVP — custo R$0/mês
 
-### Fora do escopo do MVP
-- App mobile
+**Incluído:**
+- Upload de currículo em PDF → parsing → `ResumeStructured` (Zod)
+- Coleta de vagas de fontes cooperativas:
+  - GitHub repos públicos de vagas (`frontendbr/vagas`, `backend-br/vagas`, `remotemobr/remote-jobs`)
+  - Canais Telegram públicos via Bot API oficial
+  - RSS feeds de sites que expõem feed
+  - Career pages estáticas e JS-heavy via `@sparticuz/chromium` no Vercel
+  - WhatsApp forward: usuário encaminha mensagem → IA extrai a vaga
+- Hybrid Search: embedding do CV + `hybrid_search_jobs()` no Supabase
+- Matching IA: `MatchScore` por vaga (Haiku para Basic, Sonnet para Pro)
+- Listagem de vagas ranqueadas por score + salário
+- Planos Free (sem IA) + Basic (R$29/mês)
+- Integração Stripe
+
+**Fora do escopo do V1:**
+- Sites com anti-scraping agressivo (Indeed, Catho, LinkedIn)
+- Alertas por e-mail
 - Candidatura automática
-- Chat com recrutadores
-- ATS (Applicant Tracking System)
-- Recomendação automática de sites
+- App mobile
+- ATS
+
+### V2 (desbloqueado com R$2.000 MRR)
+
+- Scraping de Indeed BR, Vagas.com, Catho via Playwright dedicado (FastAPI no Render)
+- Inngest para jobs de scraping em background
+- Alertas por e-mail de novas vagas compatíveis
+- Plano Pro (R$79/mês)
+
+### V3 (desbloqueado com R$10.000 MRR)
+
+- XML feed partnerships negociadas com job boards
+- API pública para headhunters
+- Plano Enterprise (R$299/mês)
 
 ---
 
 ## 6. Funcionalidades por Plano
 
-### Free
+### Free — R$0
 - 1 busca por semana
-- 1 site de vagas
-- Até 5 resultados ordenados por salário
-- Sem matching por IA (listagem por salário apenas)
-- Sem exportação
+- 5 resultados ordenados por salário (sem IA)
+- Fontes: GitHub + Telegram + RSS
 
-### Basic — R$ 29/mês
+### Basic — R$29/mês
 - Buscas ilimitadas
-- 1 site de vagas
-- Até 20 resultados
+- 20 resultados com matching IA (Claude Haiku)
 - Exportação CSV
+- Todas as fontes V1
 
-### Pro — R$ 79/mês
-- Até 5 sites de vagas simultâneos
-- Resultados ilimitados
-- Alertas automáticos por e-mail (novas vagas compatíveis)
-- Score de compatibilidade detalhado por vaga
+### Pro — R$79/mês
+- Resultados ilimitados com matching IA (Claude Sonnet)
+- Até 5 fontes simultâneas (V2)
+- Alertas automáticos por e-mail (V2)
+- Score de compatibilidade detalhado com breakdown
 
-### Enterprise — R$ 299/mês
-- Sites ilimitados
-- IA recomenda sites com base no perfil do usuário
-- API de integração para empresas e headhunters
+### Enterprise — R$299/mês (V3)
+- Fontes ilimitadas
+- API de integração
 - Suporte prioritário
 
 ---
 
-## 7. Critérios de Sucesso do MVP
+## 7. Requisitos Não-Funcionais
 
-| Métrica | Meta |
+| Requisito | Meta |
 |---|---|
 | Tempo de resposta (upload → resultados) | < 60 segundos |
 | Relevância percebida pelo usuário | > 70% nas buscas |
-| Conversão Free → Basic | > 5% no primeiro mês |
-| NPS após primeira busca | > 40 |
+| Custo por busca com IA (Basic) | < R$1,00 (margem positiva desde o primeiro assinante) |
+| Uptime | > 99% (Vercel SLA) |
+| Segurança | RLS no Supabase por user_id; rate limiting por plano; input sanitization |
+| LGPD | Currículo armazenado por usuário autenticado; vagas são dados públicos |
 
 ---
 
-## 8. Jornada do Usuário (MVP)
+## 8. Requisitos de IA e Guardrails
+
+- Limite de tamanho do PDF: 10MB
+- Limite de tokens enviados ao LLM: 8.000 por chamada
+- Timeout: 30s por chamada ao LLM
+- Rate limiting: Free = 1 busca/semana; Basic = 100 buscas/dia; Pro = ilimitado
+- Toda chamada ao LLM registrada em `agent_runs` (observabilidade de custo)
+- `routeModel()` verifica plano do usuário antes de qualquer chamada: Free → null, Basic → Haiku, Pro → Sonnet
+
+---
+
+## 9. Jornada do Usuário (V1 MVP)
 
 ```
 Acessa talvrix.com
-    → Cria conta (e-mail ou Google)
-    → Faz upload do currículo (PDF)
-    → Informa o site de vagas a buscar
-    → Aguarda processamento (< 60s)
-    → Visualiza lista de vagas ranqueadas
-    → Clica na vaga → redireciona para o site original
+  → Cria conta (e-mail ou Google)
+  → Faz upload do currículo (PDF)
+  → Sistema coleta vagas das fontes configuradas
+  → [Free] Visualiza top 5 vagas por salário (sem IA)
+  → [Basic/Pro] Aguarda matching IA (<60s)
+  → Visualiza lista de vagas ranqueadas por score + salário
+  → Clica na vaga → redireciona para a fonte original
 ```
 
 ---
 
-## 9. Riscos e Mitigações
+## 10. Status do Repositório
 
-| Risco | Mitigação |
-|---|---|
-| Site bloqueia scraping | Rotação de user-agent + rate limiting respeitoso |
-| Currículo em formato não legível | Validação de PDF na entrada + fallback para texto |
-| Custo de IA por busca | IA restrita a planos pagos — receita da assinatura cobre o custo |
-| Concorrente lança produto similar | Velocidade de execução + foco no mercado BR |
+**O que já existe:**
+- Repositório `CabPiz/talvrix` criado
+- 12 issues abertas (M1–M5)
+- 5 milestones criadas
+- CLAUDE.md no padrão v4.0
+- LICENSE proprietário
+
+**O que precisa ser implementado:**
+- Tudo — nenhum código foi escrito ainda
+- Issues existentes serão revisadas/fechadas/atualizadas na Fase 4 da re-inicialização
 
 ---
 
-*Talvrix — Kairos Labs | PRD v1.0*
+## 11. Riscos e Mitigações
+
+| Risco | Mitigação |
+|---|---|
+| Fonte muda estrutura e quebra scraper | Testes E2E por fonte; alertas de falha; priorizar fontes API-first |
+| Anti-scraping bloqueia IP | Respeitar robots.txt; user-agent rotation; fontes API-first no V1 |
+| Custo de IA excede receita | `routeModel()` + `agent_runs` + margem de R$28,50 por assinante Basic |
+| LGPD | Dados do CV ficam no Supabase do usuário autenticado; RLS isola por user_id |
+
+---
+
+## 12. Próximos Passos
+
+Ver `concentrador/talvrix/architecture.md § Roadmap de Implementação` para issues do MVP por milestone.
+
+---
+
+*Talvrix · PRD v2.0 · 2026-08-13*
