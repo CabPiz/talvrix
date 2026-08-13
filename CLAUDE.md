@@ -16,7 +16,7 @@ Repositório: `CabPiz/talvrix` | Owner: `CabPiz` | Project Board: nº **5**
 | Campo obrigatório no diário | `* **Projeto:** \`Talvrix\`` |
 
 ### Milestones — Issues Finais
-**#2** (M1), **#5** (M2), **#7** (M3), **#9** (M4), **#12** (M5)
+**#15** (M1), **#20** (M2), **#21** (M3), **#22** (M4), **#23** (M5)
 
 ### Board
 ```bash
