@@ -1,7 +1,7 @@
 ﻿# CLAUDE.md — Talvrix
 
 Repositório: `CabPiz/talvrix` | Owner: `CabPiz` | Project Board: nº **5**
-**Stack:** Next.js 15 · TypeScript · Tailwind CSS · Supabase · Playwright
+**Stack:** Next.js 15 · TypeScript · Tailwind CSS · Supabase · @sparticuz/chromium · Stripe · SonarCloud
 
 ---
 
