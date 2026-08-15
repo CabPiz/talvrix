@@ -26,31 +26,6 @@ O problema que resolve: o profissional hoje gasta 3–5 horas por semana em 5–
 
 ---
 
-## Fontes de vagas
-
-| Fonte | Versão |
-|---|---|
-| GitHub repos (`frontendbr/vagas`, `backend-br/vagas`, `remotemobr/remote-jobs`) | V1 |
-| Canais Telegram públicos de vagas | V1 |
-| RSS feeds (Trampos.co, Programathor) | V1 |
-| Career pages de empresas (SSR e JS-heavy) | V1 |
-| WhatsApp forward: usuário encaminha vaga → IA extrai | V1 |
-| Grandes agregadores (Indeed BR, Vagas.com, Catho) | V2 |
-| API partnerships (LinkedIn, sites latinos) | V4 |
-
----
-
-## Modelo de receita
-
-| Plano | Preço | O que inclui |
-|---|---|---|
-| Free | R$ 0 | 1 busca/semana · 5 resultados · sem IA |
-| Basic | R$ 29/mês | Buscas ilimitadas · 20 resultados · matching IA |
-| Pro | R$ 79/mês | 5 fontes · resultados ilimitados · matching avançado · alertas por e-mail |
-| Enterprise | R$ 299/mês | Fontes ilimitadas · API de integração · suporte prioritário |
-
----
-
 ## Status
 
 | Milestone | Descrição | Status |
